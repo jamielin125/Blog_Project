@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+
+{% block head_title %}
+{{ instance.title }} | {{ block.super }}
+{% endblock head_title %}
+
+
+<!--  {% block post_detail_link %}
+  <li><a href='{{ instance.get_absolute_url }}'>{{ instance.title }}</a></li>
+  {% endblock %} -->
+
+  {% block content %}
+
+      <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Blog Post Content Column -->
+            <div class="col-lg-8">
+
+                <!-- Blog Post -->
+
+                <!-- Title -->
+                 <h1 class="mt-4">{{ title }}</h1>
+
+
+                <!-- Author -->
+                <p class="lead">
+                    by {{ instance.user }}  
+                    <a href="{% url 'posts:update' slug=instance.slug %}" class='btn btn-default'>Edit</a>
+                    <a href="{% url 'posts:delete' slug=instance.slug %}" class='btn btn-warning'>Delete</a>
+
+                </p>
+
+                <hr>
+
+                <!-- Date/Time -->
+                <p> Posted on {{ instance.publish }}</p>
+
+                <hr>
+
+                <!-- Preview Image -->
+                    {% if instance.image %}
+                       <img class="img-fluid rounded" src='{{ instance.image.url }}'  alt="">
+                    {% endif %}
+
+                <hr>
+
+                <!-- Post Content -->
+                <div class='post-detail-item '>{{ instance.get_markdown }}</div>
+
+                <hr>
+
+                <!-- Blog Comments -->
+
+                <!-- Comments Form -->
+                
+                <div class="card my-4">
+                    {% if request.user.is_authenticated %}
+                    <h5 class="card-header">Leave a Comment:</h5>
+                    <div class="card-body">
+                    <form method="POST" action="."> {% csrf_token %}
+                        <div class="form-group">
+                              {{ comment_form|crispy }}
+                            <!-- <textarea class="form-control" rows="3"></textarea> -->
+                        </div>
+                        <input type='hidden' name='parent_id' value='{{ comment.id }}'>
+                        <input type='submit' value='Reply' class='btn btn-primary'>
+                    </form>
+
+                     {% else %}
+                      <p>You must login to comment </p>
+                     {% endif %}
+
+                     </div>
+
+                </div>
+
+<!--                <div class="card my-4">
+                    <h5 class="card-header">Leave a Comment:</h5>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div> -->
+
+
+
+                <hr>
+
+                <!-- Posted Comments -->
+
+                <!-- Comment -->
+                    {% for comment in comments %}
+
+                    <div class="media mb-4">
+                    <img class="d-flex mr-3 rounded-circle" src="{{ comment.user.userprofile.avatar.url }}" width="50" height="50"  alt="">
+                    <div class="media-body">
+                        <h5 class="mt-0">{{ comment.user }}</h5> {{ comment.content }}
+                        <footer class="blockquote-footer">{{ comment.timestamp|timesince }} ago | {% if comment.children.count > 0 %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %} <a class='comment-reply-btn' href='#'>Reply</a> | <a class='' href='{{ comment.get_absolute_url }}'>Thread</a></footer>
+
+                        <div class='comment-reply'>
+                        {% for child_comment in comment.children %}
+                   
+
+                          <div class="media mt-4">
+                              <img class="d-flex mr-3 rounded-circle" src="{{ child_comment.user.userprofile.avatar.url }}" width="50" height="50" alt="">
+                              <div class="media-body">
+                                  <h5 class="mt-0">{{ child_comment.user }}</h5> {{ child_comment.content }}
+                                 <footer class="blockquote-footer">{{ comment.timestamp|timesince }} ago</footer>
+                              </div>
+                          </div>
+
+                        {% endfor %}
+
+                         {% if request.user.is_authenticated %}
+                          <form method="POST" action="."> {% csrf_token %}
+                            {{ comment_form|crispy }}
+                            <input type='hidden' name='parent_id' value='{{ comment.id }}'>
+                            <input type='submit' value='Reply' class='btn btn-default'>
+                          </form>
+                          {% else %}
+                          <p>You must login to comment </p>
+                          {% endif %}
+
+
+                        </div>
+
+                        </div>
+                        </div>
+
+                      {% endfor %}
+
+            </div>
+
+            <!-- Blog Sidebar Widgets Column -->
+            <div class="col-md-4">
+
+
+
+        </div>
+        <!-- /.row -->
+
+        <hr>
+
+
+
+    </div>
+    <!-- /.container -->
+
+    {% endblock content %}
+
+
+
+
