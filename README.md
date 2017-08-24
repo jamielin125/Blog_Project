@@ -40,11 +40,11 @@ django-admin.py startproject Blog_Project
 
 1. 建立migration資料檔，如果模型有任何異動，則會產生新的migration檔
 
-python manage.py makemigrations
+    python manage.py makemigrations
 
 2. migrate會根據指定的migration記錄(利用編號指定)去將模型同步到資料庫
 
-python manage.py migrate
+    python manage.py migrate
 
 ### 創立 superuser
 
